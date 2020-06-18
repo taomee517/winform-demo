@@ -122,13 +122,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\VirtualClient.cs" />
-    <Compile Include="Device\VirtualDevice.cs" />
-    <Compile Include="ClientForm.cs">
+    <Compile Include="TerminalForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ClientForm.Designer.cs">
-      <DependentUpon>ClientForm.cs</DependentUpon>
+    <Compile Include="TerminalForm.Designer.cs">
+      <DependentUpon>TerminalForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Device\VirtualDevice.cs" />
     <Compile Include="Handler\FrameSplitDecoder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -141,8 +141,8 @@
     <Compile Include="SDK\Util\CRC16.cs" />
     <Compile Include="SDK\Util\SerialUtil.cs" />
     <Compile Include="SDK\Util\TimestampUtil.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>ClientForm.cs</DependentUpon>
+    <EmbeddedResource Include="TerminalForm.resx">
+      <DependentUpon>TerminalForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

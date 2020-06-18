@@ -14,9 +14,14 @@ namespace winform_demo.Handler
         {
             var msg = new byte[input.ReadableBytes];
             input.ReadBytes(msg);
-            var hex = BytesUtil.HexInsertSpace(BytesUtil.BytesToHex(msg));
-            var srcMac = hex.Substring(50, 18).Replace(" ", "");
-            Console.WriteLine($"Time: {DateTime.Now} Mac: {srcMac} => 收到服务器消息：{hex}");
+            output.Add(msg);
+        }
+        
+        
+        public override void ExceptionCaught(IChannelHandlerContext context, Exception exception)
+        {
+            Console.WriteLine("Exception: " + exception);
+            context.CloseAsync();
         }
     }
 }
