@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F14070A5-5B78-47A9-805A-0A11BD9EA8A7}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>winform_demo</RootNamespace>
-    <AssemblyName>winform-demo</AssemblyName>
+    <RootNamespace>winform-tcp-echo</RootNamespace>
+    <AssemblyName>winform-tcp-echo</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
