@@ -170,8 +170,8 @@
             // 
             // online
             // 
-            this.online.ForeColor = System.Drawing.Color.Lime;
             resources.ApplyResources(this.online, "online");
+            this.online.ForeColor = System.Drawing.Color.Lime;
             this.online.Name = "online";
             this.online.TabStop = true;
             this.online.UseVisualStyleBackColor = true;

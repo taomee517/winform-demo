@@ -609,9 +609,9 @@
   <data name="&gt;&gt;heartBeatLabel.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <metadata name="online.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
+  <data name="online.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="online.Location" type="System.Drawing.Point, System.Drawing">
     <value>653, 142</value>
   </data>
