@@ -19,7 +19,8 @@ namespace winform_demo
             //控件支持 UseCompatibleTextRenderingproperty 属性，该方法将此属性设置为默认值。
             Application.SetCompatibleTextRenderingDefault(false);
             //用于设置在当前项目中要启动的窗体，这里 new Form1() 即为要启动的窗体。
-            Application.Run(new TerminalForm());
+            // Application.Run(new TerminalForm());
+            Application.Run(new Gateway());
         }
     }
 }

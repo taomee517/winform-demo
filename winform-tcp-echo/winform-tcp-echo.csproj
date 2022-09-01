@@ -122,6 +122,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client\VirtualClient.cs" />
+    <Compile Include="Gateway.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Gateway.Designer.cs">
+      <DependentUpon>Gateway.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SDK\STD\MessageBuilder.cs" />
     <Compile Include="TerminalForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,15 +139,18 @@
     <Compile Include="Handler\FrameSplitDecoder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SDK\Constant\FunType.cs" />
-    <Compile Include="SDK\Constant\LoraConst.cs" />
-    <Compile Include="SDK\Constant\SensorType.cs" />
-    <Compile Include="SDK\Constant\TransportType.cs" />
-    <Compile Include="SDK\Util\BytesUtil.cs" />
-    <Compile Include="SDK\MessageBuilder.cs" />
-    <Compile Include="SDK\Util\CRC16.cs" />
-    <Compile Include="SDK\Util\SerialUtil.cs" />
-    <Compile Include="SDK\Util\TimestampUtil.cs" />
+    <Compile Include="SDK\LORA\Constant\FunType.cs" />
+    <Compile Include="SDK\LORA\Constant\LoraConst.cs" />
+    <Compile Include="SDK\LORA\Constant\SensorType.cs" />
+    <Compile Include="SDK\LORA\Constant\TransportType.cs" />
+    <Compile Include="Utils\BytesUtil.cs" />
+    <Compile Include="SDK\LORA\MessageBuilder.cs" />
+    <Compile Include="SDK\LORA\Util\CRC16.cs" />
+    <Compile Include="SDK\LORA\Util\SerialUtil.cs" />
+    <Compile Include="SDK\LORA\Util\TimestampUtil.cs" />
+    <EmbeddedResource Include="Gateway.resx">
+      <DependentUpon>Gateway.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="TerminalForm.resx">
       <DependentUpon>TerminalForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -180,7 +190,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="SDK\Beans\" />
+    <Folder Include="SDK\LORA\Beans\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

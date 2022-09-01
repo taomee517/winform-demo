@@ -16,10 +16,15 @@ namespace winform_demo.Device
             private TerminalForm.ShowSendMsg showSend;
             private TerminalForm.ShowRecvMsg showRecv;
             private TerminalForm.OnlineStatusChange onlineStatusChange;
+
+            private Gateway.ShowMsgLog showMsgLog;
+            private Gateway.StatusChange statusChange;
+
+
             private int index = 0;
 
-            public VirtualDevice(string mac, 
-                TerminalForm.ShowSendMsg showSend, 
+            public VirtualDevice(string mac,
+                TerminalForm.ShowSendMsg showSend,
                 TerminalForm.ShowRecvMsg showRecv,
                 TerminalForm.OnlineStatusChange onlineStatusChange)
             {
@@ -29,25 +34,36 @@ namespace winform_demo.Device
                 this.onlineStatusChange = onlineStatusChange;
             }
 
+
+            public VirtualDevice(string mac,
+                Gateway.ShowMsgLog showMsgLog,
+                Gateway.StatusChange statusChange)
+            {
+                this.mac = mac;
+                this.showMsgLog = showMsgLog;
+                this.statusChange = statusChange;
+            }
+
             public override void ChannelActive(IChannelHandlerContext context)
             {
-                Console.WriteLine("device active!");
-                onlineStatusChange.DynamicInvoke(true);
-
+                Console.WriteLine("channel active!");
+                statusChange.Invoke(true);
             }
 
             public override void ChannelInactive(IChannelHandlerContext context)
             {
-                Console.WriteLine("device inactive!");
-                onlineStatusChange.DynamicInvoke(false);
+                Console.WriteLine("channel inactive!");
+                statusChange.Invoke(false);
+
                 context.CloseAsync();
             }
 
             public override void ChannelRead(IChannelHandlerContext context, object message)
             {
-                var msg = BytesUtil.Bytes2String(message as byte[]);
+                var msg = BytesUtil.BytesToHexWithSeparator(message as byte[], " ");
                 Console.WriteLine($"收到消息：{msg}");
-                showRecv.DynamicInvoke(msg);
+
+                showMsgLog.Invoke("Server", msg);
             }
 
             public override void UserEventTriggered(IChannelHandlerContext context, object evt)
@@ -78,11 +94,15 @@ namespace winform_demo.Device
                 if (message is string)
                 {
                     Console.WriteLine($"发送消息:{message}");
-                    showSend.DynamicInvoke(message);
-                    var bytes = BytesUtil.String2Bytes(message as string);
+                      
+
+                    var bytes = BytesUtil.Hex2Bytes(message as string);
                     var buffer = Unpooled.WrappedBuffer(bytes);
                     context.WriteAndFlushAsync(buffer);
-                }
+
+                    var sepHex = BytesUtil.HexInsertSpace(message as string);
+                    showMsgLog.Invoke("Device", sepHex);
+            }
 
                 return Task.CompletedTask;
             }
@@ -101,5 +121,7 @@ namespace winform_demo.Device
                 Console.WriteLine($"Time: {DateTime.Now} Mac: {mac} => 发送心跳消息：{hbHex}");
                 return hbMsg;
             }
+
+            
         }
 }

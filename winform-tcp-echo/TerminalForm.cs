@@ -156,5 +156,15 @@ namespace winform_demo
                 deviceNo.BackColor = Color.White;
             }
         }
+
+        private void TerminalForm_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void splitContainer2_Panel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }

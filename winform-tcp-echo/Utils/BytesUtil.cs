@@ -18,6 +18,7 @@ namespace winform_demo.SDK
         /*16进制字符串转为字节数组*/
         public static byte[] Hex2Bytes(string hex)
         {
+            hex = hex.Replace(" ", "");
             var result = new byte[hex.Length / 2];
             var sb = new StringBuilder("0x");
             for (var i = 0; i < hex.Length; i++)
@@ -64,6 +65,7 @@ namespace winform_demo.SDK
 
         public static string HexJoinSeparator(string hex, string sep)
         {
+            hex = hex.Replace(" ", "");
             var sb = new StringBuilder();
             for (var i = 0; i < hex.Length; i++)
             {

@@ -28,8 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources =
-                new System.ComponentModel.ComponentResourceManager(typeof(TerminalForm));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TerminalForm));
             this.connect = new System.Windows.Forms.Button();
             this.port = new System.Windows.Forms.TextBox();
             this.portLabel = new System.Windows.Forms.Label();
@@ -215,8 +214,10 @@
             this.Controls.Add(this.port);
             this.Controls.Add(this.connect);
             this.Name = "TerminalForm";
+            this.Load += new System.EventHandler(this.TerminalForm_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
+
         }
 
         #endregion
