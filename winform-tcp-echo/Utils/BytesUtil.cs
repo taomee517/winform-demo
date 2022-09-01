@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace winform_demo.SDK
+namespace winform_demo.Utils
 {
     class BytesUtil
     {
@@ -51,6 +51,16 @@ namespace winform_demo.SDK
                 sb.Append(Convert.ToString(b, 16));
             }
             return sb.ToString();
+        }
+
+        public static string BytesToHexWithBlank(byte[] bytes)
+        {
+            if (bytes == null)
+            {
+                return null;
+            }
+            var hex = BytesToHex(bytes);
+            return HexJoinSeparator(hex, " ");
         }
 
         public static string BytesToHexWithSeparator(byte[] bytes, string sep)

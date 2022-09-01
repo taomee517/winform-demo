@@ -128,7 +128,14 @@
     <Compile Include="Gateway.Designer.cs">
       <DependentUpon>Gateway.cs</DependentUpon>
     </Compile>
-    <Compile Include="SDK\STD\MessageBuilder.cs" />
+    <Compile Include="SDK\STD\Constant\EnvironmentType.cs" />
+    <Compile Include="SDK\STD\Constant\RequestType.cs" />
+    <Compile Include="SDK\STD\Constant\FormatType.cs" />
+    <Compile Include="SDK\STD\Constant\DefaultValue.cs" />
+    <Compile Include="SDK\STD\Protocol\StdUnescapeHandler.cs" />
+    <Compile Include="SDK\STD\Protocol\StdFrameSplitHandler.cs" />
+    <Compile Include="SDK\STD\Protocol\MessageBuilder.cs" />
+    <Compile Include="SDK\STD\Utils\CRCUtil.cs" />
     <Compile Include="TerminalForm.cs">
       <SubType>Form</SubType>
     </Compile>

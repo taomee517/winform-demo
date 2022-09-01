@@ -1,8 +1,11 @@
-﻿using System;
+﻿using SDK.STD;
+using SDK.STD.Constant;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using winform_demo.Client;
 using winform_demo.Device;
+using winform_demo.Utils;
 
 namespace winform_demo
 {
@@ -62,7 +65,7 @@ namespace winform_demo
         {
             var ip = this.ip.Text;
             var port = Convert.ToInt32(this.port.Text);
-            var mac = textBox1.Text;
+            var mac = gatewayNo.Text;
             var device = new VirtualDevice(mac, showMsgLog, statusChange);
             client = new VirtualClient(ip, port, false, 30, device);
             await client.Start();
@@ -98,25 +101,80 @@ namespace winform_demo
                 return;
             }
             client.Send(deviceMessage);
+            this.messageBuffer.Clear();
             this.errorMessage.Clear();
+        }
+
+        // 设备登录
+        private void register_Click(object sender, EventArgs e)
+        {
+            var gatewayNo = this.gatewayNo.Text;
+            if (gatewayNo == null || "".Equals(gatewayNo))
+            {
+                var errorMsg = "网关号为空！！！";
+                this.errorMessage.Text = errorMsg;
+                return;
+            }
+            byte[] bytes = MessageBuilder.BuildRegisterMessage(gatewayNo);
+            this.messageBuffer.Text = bytesFormat(bytes); ;
+
+            //Task.Run(async delegate
+            //{
+            //    await Task.Delay(1000);
+            //    send_Click(sender, e);
+            //});
+
+            //send_Click(sender, e);
+
         }
 
         // 设备登录
         private void login_Click(object sender, EventArgs e)
         {
-            
+            var gatewayNo = this.gatewayNo.Text;
+            if (gatewayNo == null || "".Equals(gatewayNo))
+            {
+                var errorMsg = "网关号为空！！！";
+                this.errorMessage.Text = errorMsg;
+                return;
+            }
+
+            if (!DefaultValue.PWD_MAP.ContainsKey(gatewayNo))
+            {
+                var errorMsg = "请先注册，获取临时口令！！！";
+                this.errorMessage.Text = errorMsg;
+                return;
+            }
+            byte[] bytes = MessageBuilder.BuildLoginMessage(gatewayNo);
+            this.messageBuffer.Text = bytesFormat(bytes); 
         }
 
         // 设备登出
         private void logout_Click(object sender, EventArgs e)
         {
-
+            var gatewayNo = this.gatewayNo.Text;
+            if (gatewayNo == null || "".Equals(gatewayNo))
+            {
+                var errorMsg = "网关号为空！！！";
+                this.errorMessage.Text = errorMsg;
+                return;
+            }
+            byte[] bytes = MessageBuilder.BuildLogoutMessage(gatewayNo);
+            this.messageBuffer.Text = bytesFormat(bytes);
         }
 
         // 拉取缓存指令
         private void cacheOrder_Click(object sender, EventArgs e)
         {
-
+            var gatewayNo = this.gatewayNo.Text;
+            if (gatewayNo == null || "".Equals(gatewayNo))
+            {
+                var errorMsg = "网关号为空！！！";
+                this.errorMessage.Text = errorMsg;
+                return;
+            }
+            byte[] bytes = MessageBuilder.BuildCacheOrderMessage(gatewayNo);
+            this.messageBuffer.Text = bytesFormat(bytes);
         }
 
         // 清空日志
@@ -127,6 +185,11 @@ namespace winform_demo
             this.messageBuffer.Clear();
         }
 
+
+        private string bytesFormat(byte[] bytes)
+        {
+            return BytesUtil.BytesToHexWithBlank(bytes);
+        }
 
         private string boxMessage(string role, string message)
         {

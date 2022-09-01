@@ -6,6 +6,7 @@ using DotNetty.Handlers.Timeout;
 using DotNetty.Transport.Bootstrapping;
 using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
+using SDK.STD.Protocol;
 using winform_demo.Device;
 using winform_demo.Handler;
 using winform_demo.SDK;
@@ -41,8 +42,10 @@ namespace winform_demo.Client
                     .Handler(new ActionChannelInitializer<ISocketChannel>(ch =>
                     {
                         var pipeline = ch.Pipeline;
-                        pipeline.AddLast("split", new FrameSplitDecoder());
-                        if (HeartbeatSwitch!=null && HeartbeatSwitch)
+                        //pipeline.AddLast("split", new FrameSplitDecoder());
+                        pipeline.AddLast("split", new StdFrameSplitHandler());
+                        pipeline.AddLast("unescape", new StdUnescapeHandler());
+                        if (HeartbeatSwitch)
                         {
                             var idleHandle = new IdleStateHandler(0, Interval, 0);
                             pipeline.AddLast("idle", idleHandle);

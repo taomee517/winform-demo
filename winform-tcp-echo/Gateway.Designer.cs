@@ -31,7 +31,7 @@ namespace winform_demo
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.gatewayNo = new System.Windows.Forms.TextBox();
             this.channelSize = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -150,10 +150,11 @@ namespace winform_demo
             this.connect = new System.Windows.Forms.Button();
             this.disconnect = new System.Windows.Forms.Button();
             this.login = new System.Windows.Forms.Button();
-            this.logClear = new System.Windows.Forms.Button();
-            this.errorMessage = new System.Windows.Forms.TextBox();
             this.logout = new System.Windows.Forms.Button();
             this.cacheOrder = new System.Windows.Forms.Button();
+            this.logClear = new System.Windows.Forms.Button();
+            this.errorMessage = new System.Windows.Forms.TextBox();
+            this.register = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.channelSize)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.groupBox1.SuspendLayout();
@@ -163,13 +164,13 @@ namespace winform_demo
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // textBox1
+            // gatewayNo
             // 
-            this.textBox1.Location = new System.Drawing.Point(85, 26);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(120, 21);
-            this.textBox1.TabIndex = 0;
-            this.textBox1.Text = "4854000000000001";
+            this.gatewayNo.Location = new System.Drawing.Point(85, 26);
+            this.gatewayNo.Name = "gatewayNo";
+            this.gatewayNo.Size = new System.Drawing.Size(120, 21);
+            this.gatewayNo.TabIndex = 0;
+            this.gatewayNo.Text = "4854000000000001";
             // 
             // channelSize
             // 
@@ -347,8 +348,10 @@ namespace winform_demo
             // 
             // msgBox
             // 
+            this.msgBox.BackColor = System.Drawing.SystemColors.HighlightText;
             this.msgBox.Location = new System.Drawing.Point(456, 66);
             this.msgBox.Name = "msgBox";
+            this.msgBox.ReadOnly = true;
             this.msgBox.Size = new System.Drawing.Size(693, 466);
             this.msgBox.TabIndex = 16;
             this.msgBox.Text = "";
@@ -672,7 +675,7 @@ namespace winform_demo
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.textBox1);
+            this.groupBox2.Controls.Add(this.gatewayNo);
             this.groupBox2.Controls.Add(this.label1);
             this.groupBox2.Controls.Add(this.checkBox1);
             this.groupBox2.Controls.Add(this.checkBox2);
@@ -1284,6 +1287,7 @@ namespace winform_demo
             this.flowLayoutPanel1.Controls.Add(this.button7);
             this.flowLayoutPanel1.Controls.Add(this.connect);
             this.flowLayoutPanel1.Controls.Add(this.disconnect);
+            this.flowLayoutPanel1.Controls.Add(this.register);
             this.flowLayoutPanel1.Controls.Add(this.login);
             this.flowLayoutPanel1.Controls.Add(this.logout);
             this.flowLayoutPanel1.Controls.Add(this.cacheOrder);
@@ -1325,7 +1329,7 @@ namespace winform_demo
             // 
             // login
             // 
-            this.login.Location = new System.Drawing.Point(246, 3);
+            this.login.Location = new System.Drawing.Point(327, 3);
             this.login.Name = "login";
             this.login.Size = new System.Drawing.Size(75, 23);
             this.login.TabIndex = 2;
@@ -1333,9 +1337,29 @@ namespace winform_demo
             this.login.UseVisualStyleBackColor = true;
             this.login.Click += new System.EventHandler(this.login_Click);
             // 
+            // logout
+            // 
+            this.logout.Location = new System.Drawing.Point(408, 3);
+            this.logout.Name = "logout";
+            this.logout.Size = new System.Drawing.Size(75, 23);
+            this.logout.TabIndex = 5;
+            this.logout.Text = "退出";
+            this.logout.UseVisualStyleBackColor = true;
+            this.logout.Click += new System.EventHandler(this.logout_Click);
+            // 
+            // cacheOrder
+            // 
+            this.cacheOrder.Location = new System.Drawing.Point(489, 3);
+            this.cacheOrder.Name = "cacheOrder";
+            this.cacheOrder.Size = new System.Drawing.Size(85, 23);
+            this.cacheOrder.TabIndex = 6;
+            this.cacheOrder.Text = "读取缓存指令";
+            this.cacheOrder.UseVisualStyleBackColor = true;
+            this.cacheOrder.Click += new System.EventHandler(this.cacheOrder_Click);
+            // 
             // logClear
             // 
-            this.logClear.Location = new System.Drawing.Point(499, 3);
+            this.logClear.Location = new System.Drawing.Point(580, 3);
             this.logClear.Name = "logClear";
             this.logClear.Size = new System.Drawing.Size(75, 23);
             this.logClear.TabIndex = 4;
@@ -1353,23 +1377,15 @@ namespace winform_demo
             this.errorMessage.Size = new System.Drawing.Size(1116, 14);
             this.errorMessage.TabIndex = 28;
             // 
-            // logout
+            // register
             // 
-            this.logout.Location = new System.Drawing.Point(327, 3);
-            this.logout.Name = "logout";
-            this.logout.Size = new System.Drawing.Size(75, 23);
-            this.logout.TabIndex = 5;
-            this.logout.Text = "退出";
-            this.logout.UseVisualStyleBackColor = true;
-            // 
-            // cacheOrder
-            // 
-            this.cacheOrder.Location = new System.Drawing.Point(408, 3);
-            this.cacheOrder.Name = "cacheOrder";
-            this.cacheOrder.Size = new System.Drawing.Size(85, 23);
-            this.cacheOrder.TabIndex = 6;
-            this.cacheOrder.Text = "读取缓存指令";
-            this.cacheOrder.UseVisualStyleBackColor = true;
+            this.register.Location = new System.Drawing.Point(246, 3);
+            this.register.Name = "register";
+            this.register.Size = new System.Drawing.Size(75, 23);
+            this.register.TabIndex = 7;
+            this.register.Text = "获取口令";
+            this.register.UseVisualStyleBackColor = true;
+            this.register.Click += new System.EventHandler(this.register_Click);
             // 
             // Gateway
             // 
@@ -1406,7 +1422,7 @@ namespace winform_demo
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox gatewayNo;
         private System.Windows.Forms.NumericUpDown channelSize;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -1529,5 +1545,6 @@ namespace winform_demo
         private System.Windows.Forms.TextBox errorMessage;
         private System.Windows.Forms.Button logout;
         private System.Windows.Forms.Button cacheOrder;
+        private System.Windows.Forms.Button register;
     }
 }
