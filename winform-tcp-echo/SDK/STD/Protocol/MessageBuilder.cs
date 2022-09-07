@@ -231,15 +231,55 @@ namespace SDK.STD
                 // end sign
                 buffer.WriteByte(DefaultValue.SPLIT_SIGN);
 
-                var msg = new byte[buffer.ReadableBytes];
-                buffer.ReadBytes(msg);
-                return msg;
+                //var msg = new byte[buffer.ReadableBytes];
+                //buffer.ReadBytes(msg);
+                //return msg;
+                return Escape(buffer);
             }
             finally
             {
                 buffer.Release();
             }
         }
+
+
+
+        private static byte[] Escape(IByteBuffer message)
+        {
+            var result = Unpooled.Buffer();
+            try 
+            { 
+                // head
+                result.WriteByte(message.ReadByte());
+                while (message.ReadableBytes > 3)
+                {
+                    byte curr = message.ReadByte();
+                    if (curr == DefaultValue.ESCAPE_SIGN)
+                    {
+                        result.WriteBytes(DefaultValue.ESCAPE_7D);
+                        continue;
+                    }
+                    if (curr == DefaultValue.SPLIT_SIGN)
+                    {
+                        result.WriteBytes(DefaultValue.ESCAPE_7E);
+                        continue;
+                    }
+                    result.WriteByte(curr);
+                }
+                var tailBytes = new byte[3];
+                message.ReadBytes(tailBytes);
+                result.WriteBytes(tailBytes);
+                result.AdjustCapacity(result.ReadableBytes);
+
+                var msg = new byte[result.ReadableBytes];
+                result.ReadBytes(msg);
+                return msg;
+            }
+            finally
+            {
+                result.Release();
+            }
+}
 
 
 

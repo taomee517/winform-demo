@@ -43,7 +43,7 @@ namespace winform_demo.Client
                     {
                         var pipeline = ch.Pipeline;
                         //pipeline.AddLast("split", new FrameSplitDecoder());
-                        pipeline.AddLast("escape", new StdEscapeHandler());
+                        //pipeline.AddLast("escape", new StdEscapeHandler());
                         pipeline.AddLast("split", new StdFrameSplitHandler());
                         pipeline.AddLast("unescape", new StdUnescapeHandler());
                         if (HeartbeatSwitch)

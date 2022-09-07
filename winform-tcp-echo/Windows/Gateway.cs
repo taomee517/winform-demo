@@ -287,27 +287,27 @@ namespace Windows
             batteryInfo.Voltage = Convert.ToDouble(voltageVal);
             batteryInfo.Temp = Convert.ToDouble(tempVal);
             byte[] batterStatusMsg = MessageBuilder.BuildBatteryMessage(gatewayNo, batteryInfo);
-            this.messageBuffer.Text = bytesFormat(batterStatusMsg);
+            this.messageBuffer.Text = bytesFormat(batterStatusMsg) + " ";
             this.batteryBox.BackColor = Color.White;
             this.voltageBox.BackColor = Color.White;
             this.tempBox.BackColor = Color.White;
 
 
-            // 生成信号信息对象
-            //SignalInfo signalInfo = new SignalInfo();
-            //signalInfo.SignalEnable = this.signalCheckBox.Checked;
+            //生成信号信息对象
+           SignalInfo signalInfo = new SignalInfo();
+            signalInfo.SignalEnable = this.signalCheckBox.Checked;
 
-            //var signalVal = this.signalBox.Text;
-            //if (signalVal == null || "".Equals(signalVal) && signalInfo.SignalEnable)
-            //{
-            //    this.signalBox.BackColor = Color.Red;
-            //    return;
-            //}
+            var signalVal = this.signalBox.Text;
+            if (signalVal == null || "".Equals(signalVal) && signalInfo.SignalEnable)
+            {
+                this.signalBox.BackColor = Color.Red;
+                return;
+            }
 
-            //signalInfo.Signal = Convert.ToDouble(signalVal);          
-            //byte[] signalStatusMsg = MessageBuilder.BuildSignalMessage(gatewayNo, signalInfo);
-            //this.messageBuffer.Text += bytesFormat(signalStatusMsg);
-            //this.signalBox.BackColor = Color.White;
+            signalInfo.Signal = Convert.ToDouble(signalVal);
+            byte[] signalStatusMsg = MessageBuilder.BuildSignalMessage(gatewayNo, signalInfo);
+            this.messageBuffer.Text += bytesFormat(signalStatusMsg);
+            this.signalBox.BackColor = Color.White;
         }
 
         private void buildDataMsg_Click(object sender, EventArgs e)
