@@ -9,6 +9,7 @@ using DotNetty.Transport.Channels;
 using SDK.STD.Constant;
 using SDK.STD;
 using winform_demo.Utils;
+using Windows;
 
 namespace winform_demo.Device
 {
@@ -21,9 +22,10 @@ namespace winform_demo.Device
 
             private Gateway.ShowMsgLog showMsgLog;
             private Gateway.StatusChange statusChange;
+            private Gateway.PwdGetter pwdGetter;
 
 
-            private int index = 0;
+        private int index = 0;
 
             public VirtualDevice(string mac,
                 TerminalForm.ShowSendMsg showSend,
@@ -39,11 +41,13 @@ namespace winform_demo.Device
 
             public VirtualDevice(string mac,
                 Gateway.ShowMsgLog showMsgLog,
-                Gateway.StatusChange statusChange)
+                Gateway.StatusChange statusChange,
+                Gateway.PwdGetter pwdGetter)
             {
                 this.mac = mac;
                 this.showMsgLog = showMsgLog;
                 this.statusChange = statusChange;
+                this.pwdGetter = pwdGetter;
             }
 
             public override void ChannelActive(IChannelHandlerContext context)
@@ -123,6 +127,7 @@ namespace winform_demo.Device
                         var paramIndex = coreBuffer.ReadShort();
                         int paramLen = coreBuffer.ReadShort();
                         var tempPwd = coreBuffer.ReadCharSequence(paramLen, System.Text.Encoding.UTF8).ToString();
+                        pwdGetter.Invoke(tempPwd);
                         if (!DefaultValue.PWD_MAP.ContainsKey(gatewayNo)) {     
                             DefaultValue.PWD_MAP.Add(gatewayNo, tempPwd);
                         }
@@ -169,7 +174,7 @@ namespace winform_demo.Device
 
                     var sepHex = BytesUtil.HexInsertSpace(message as string);
                     showMsgLog.Invoke("Device", sepHex);
-            }
+                }
 
                 return Task.CompletedTask;
             }

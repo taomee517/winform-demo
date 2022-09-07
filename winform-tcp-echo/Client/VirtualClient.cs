@@ -43,6 +43,7 @@ namespace winform_demo.Client
                     {
                         var pipeline = ch.Pipeline;
                         //pipeline.AddLast("split", new FrameSplitDecoder());
+                        pipeline.AddLast("escape", new StdEscapeHandler());
                         pipeline.AddLast("split", new StdFrameSplitHandler());
                         pipeline.AddLast("unescape", new StdUnescapeHandler());
                         if (HeartbeatSwitch)
@@ -69,9 +70,9 @@ namespace winform_demo.Client
             return _channel!=null && _channel.Active;
         }
 
-        public void Send(string msg)
+        public async void Send(string msg)
         {
-            _channel.WriteAndFlushAsync(msg);
+           await _channel.WriteAndFlushAsync(msg);
         }
 
         public void AddInterval(int interval)

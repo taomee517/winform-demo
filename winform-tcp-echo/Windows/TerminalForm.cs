@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using winform_demo.Client;
 using winform_demo.Device;
 
-namespace winform_demo
+namespace Windows
 {
     public partial class TerminalForm : Form
     {

@@ -1,4 +1,4 @@
-﻿namespace winform_demo
+﻿namespace Windows
 {
     partial class TerminalForm
     {

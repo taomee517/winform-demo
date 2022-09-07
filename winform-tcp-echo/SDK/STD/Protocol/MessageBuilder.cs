@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using SDK.STD.Constant;
 using SDK.STD.Utils;
 using winform_demo.Utils;
+using SDK.STD.Beans;
+using Beans;
 
 namespace SDK.STD
 {
@@ -38,6 +40,138 @@ namespace SDK.STD
             buffer.ReadBytes(tlvBytes);
             return BuildMessage(gatewayNo, DefaultValue.LOGIN, RequestType.PUBLISH, tlvBytes);
         }
+
+
+        // 创建数据消息
+        public static byte[] BuildDataMessage(string gatewayNo, List<SensorDataInfo> sensorDatas)
+        {
+            var totalChannels = sensorDatas.Count;
+            var selectCount = sensorDatas.Count(sensorData=> sensorData.CheckeState);
+            int startIndex = sensorDatas.FindIndex(sensorData => sensorData.CheckeState);
+            int func = selectCount == sensorDatas.Count ? DefaultValue.CORE_DATA : DefaultValue.RANDOM_CHANNEL_DATA;
+
+            int dataLen = selectCount * 8 + 4;            
+            var dataBuffer = Unpooled.Buffer(dataLen);
+            dataBuffer.WriteShort(3);
+            dataBuffer.WriteShort(selectCount * 8);
+            for (int i=0;i< totalChannels; i++)
+            {
+                // TODO 间隔选择情况兼容 
+                if (sensorDatas[i].CheckeState)
+                {
+                    SensorDataInfo sensorData = sensorDatas[i];
+                    List<Object> data = sensorData.Params;
+                    dataBuffer.WriteFloat((float)Convert.ToDouble(data[0]));
+                    dataBuffer.WriteFloat((float)Convert.ToDouble(data[1]));
+                }
+            }
+            byte[] dataBytes = new byte[dataBuffer.ReadableBytes];
+            dataBuffer.ReadBytes(dataBytes);
+
+
+            int length = func == DefaultValue.CORE_DATA ? (10 + dataLen) : (1 + 1 + dataLen + 10);
+            var buffer = Unpooled.Buffer(length);
+            if (DefaultValue.RANDOM_CHANNEL_DATA == func)
+            {
+                // 起始通道
+                buffer.WriteShort(1);
+                buffer.WriteShort(1);
+                buffer.WriteByte(startIndex);
+
+                // 随机通道数
+                buffer.WriteShort(2);
+                buffer.WriteShort(1);
+                int randomCount = 1;
+                for (int j = startIndex; j < totalChannels; j++)
+                {
+                    if (sensorDatas[j].CheckeState && j>startIndex) {
+                        randomCount++;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                buffer.WriteByte(selectCount);
+            }
+            buffer.WriteBytes(dataBytes);
+            byte[] tlvBytes = new byte[buffer.ReadableBytes];
+            buffer.ReadBytes(tlvBytes);
+            return BuildMessage(gatewayNo, func, RequestType.PUBLISH, tlvBytes);
+        }
+
+        // 创建状态信息
+        public static byte[] BuildBatteryMessage(string gatewayNo, BatteryInfo batteryInfo)
+        {
+            int statusCount = 0;
+            if (batteryInfo.BatteryEnable)
+            {
+                statusCount++;
+            }
+
+            if (batteryInfo.VoltageEnable)
+            {
+                statusCount++;
+            }
+
+            if (batteryInfo.TempEnable)
+            {
+                statusCount++;
+            }
+
+            if (statusCount == 0)
+            {
+                return null;
+            }
+
+            var buffer = Unpooled.Buffer(statusCount * 6);
+            if (batteryInfo.BatteryEnable)
+            {
+                buffer.WriteShort(1);
+                buffer.WriteShort(2);
+                buffer.WriteShort(Convert.ToInt32(batteryInfo.Battery));
+            }
+
+            if (batteryInfo.VoltageEnable) 
+            { 
+                buffer.WriteShort(2);
+                buffer.WriteShort(2);
+                buffer.WriteShort(Convert.ToInt32(batteryInfo.Voltage * 1000));
+            }
+            
+            if (batteryInfo.TempEnable)
+	        {
+                buffer.WriteShort(3);
+                buffer.WriteShort(2);
+                buffer.WriteShort(Convert.ToInt32(batteryInfo.Temp));
+	        }            
+
+            byte[] tlvBytes = new byte[buffer.ReadableBytes];
+            buffer.ReadBytes(tlvBytes);
+            return BuildMessage(gatewayNo, DefaultValue.BATTERY, RequestType.PUBLISH, tlvBytes);
+        }
+
+
+        // 创建状态信息
+        public static byte[] BuildSignalMessage(string gatewayNo, SignalInfo singalInfo)
+        {
+            if (!singalInfo.SignalEnable)
+            {
+                return null;
+            }
+
+            var buffer = Unpooled.Buffer(6);
+
+            buffer.WriteShort(1);
+            buffer.WriteShort(2);
+            buffer.WriteShort(Convert.ToInt32(singalInfo.Signal));
+            
+
+            byte[] tlvBytes = new byte[buffer.ReadableBytes];
+            buffer.ReadBytes(tlvBytes);
+            return BuildMessage(gatewayNo, DefaultValue.SIGNAL, RequestType.PUBLISH, tlvBytes);
+        }
+
 
         // 创建登出消息
         public static byte[] BuildLogoutMessage(string gatewayNo)
@@ -138,7 +272,7 @@ namespace SDK.STD
         }
 
 
-        private static string ZeroFillStr(string text, int len)
+        public static string ZeroFillStr(string text, int len)
         {
             int textLen = text.Length;
             if (textLen < len)
@@ -151,6 +285,30 @@ namespace SDK.STD
             else
             {
                 text = text.Substring(textLen - len);
+            }
+            return text;
+        }
+
+        public static string TailZeroFillStr(string text, int len)
+        {
+            int index = text.IndexOf(".");
+            int tailLen = 0;
+            if (index < 0)
+            {
+                text += ".";
+            }
+            else
+            {
+                var tail = text.Substring(index + 1);
+                tailLen = tail.Length;
+
+            }
+            if (tailLen < len)
+            {
+                for (int i = 0; i < len - tailLen; i++)
+                {
+                    text += "0";
+                }
             }
             return text;
         }

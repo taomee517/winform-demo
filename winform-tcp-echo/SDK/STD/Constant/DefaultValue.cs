@@ -44,10 +44,10 @@ namespace SDK.STD.Constant
 
         public const Int16 TIME = 0x1000;
         public const Int16 DEVICE_INFO = 0x1001;
-        public const Int16 BATTERY = 0x1001;
-        public const Int16 SERVER_URL = 0x1001;
-        public const Int16 INTERVAL = 0x1001;
-        public const Int16 SIGNAL = 0x1001;
+        public const Int16 BATTERY = 0x1002;
+        public const Int16 SERVER_URL = 0x1003;
+        public const Int16 INTERVAL = 0x1004;
+        public const Int16 SIGNAL = 0x1005;
 
         public const Int16 CORE_DATA = 0x2000;
         public const Int16 RANDOM_CHANNEL_DATA = 0x2001;
