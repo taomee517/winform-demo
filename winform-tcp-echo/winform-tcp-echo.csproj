@@ -129,6 +129,18 @@
     <Compile Include="Beans\DataEventArgs.cs" />
     <Compile Include="Beans\SensorDataInfo.cs" />
     <Compile Include="Beans\SensorModelInfo.cs" />
+    <Compile Include="Device\MockDeviceFactory.cs" />
+    <Compile Include="Device\AbstractMockDevice.cs" />
+    <Compile Include="SDK\MEASURE\Constant\HardwareType.cs" />
+    <Compile Include="SDK\MEASURE\Constant\MeasureDefault.cs" />
+    <Compile Include="SDK\MEASURE\Constant\LaserDirection.cs" />
+    <Compile Include="SDK\MEASURE\Constant\ReportReason.cs" />
+    <Compile Include="SDK\MEASURE\Device\MeasureMockDevice.cs" />
+    <Compile Include="SDK\MEASURE\Protocol\MeasureFrameSplitHandler.cs" />
+    <Compile Include="SDK\MEASURE\Protocol\MeasureMessageBuilder.cs" />
+    <Compile Include="SDK\MEASURE\Protocol\MeasureValidateHandler.cs" />
+    <Compile Include="SDK\MEASURE\Utils\CRCUtil.cs" />
+    <Compile Include="SDK\MEASURE\Utils\ValidateUtil.cs" />
     <Compile Include="Windows\ChannelForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -154,14 +166,7 @@
     <Compile Include="SDK\STD\Protocol\StdFrameSplitHandler.cs" />
     <Compile Include="SDK\STD\Protocol\MessageBuilder.cs" />
     <Compile Include="SDK\STD\Utils\CRCUtil.cs" />
-    <Compile Include="Windows\TerminalForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Windows\TerminalForm.Designer.cs">
-      <DependentUpon>TerminalForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Device\VirtualDevice.cs" />
-    <Compile Include="Handler\FrameSplitDecoder.cs" />
+    <Compile Include="SDK\STD\Device\AeroVMMockDevice.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SDK\LORA\Constant\FunType.cs" />
@@ -178,9 +183,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Windows\Gateway.resx">
       <DependentUpon>Gateway.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Windows\TerminalForm.resx">
-      <DependentUpon>TerminalForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

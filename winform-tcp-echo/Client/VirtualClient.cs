@@ -8,8 +8,6 @@ using DotNetty.Transport.Channels;
 using DotNetty.Transport.Channels.Sockets;
 using SDK.STD.Protocol;
 using winform_demo.Device;
-using winform_demo.Handler;
-using winform_demo.SDK;
 
 namespace winform_demo.Client
 {
@@ -19,10 +17,10 @@ namespace winform_demo.Client
         private int Port;
         private bool HeartbeatSwitch;
         private int Interval;
-        VirtualDevice Device;
+        AbstractMockDevice Device;
         private static IChannel _channel;
 
-        public VirtualClient(string host, int port, bool heartbeatSwitch, int interval, VirtualDevice device)
+        public VirtualClient(string host, int port, bool heartbeatSwitch, int interval, AbstractMockDevice device)
         {
             Host = host;
             Port = port;
@@ -39,20 +37,7 @@ namespace winform_demo.Client
             {
                 bootstrap.Group(workers)
                     .Channel<TcpSocketChannel>()
-                    .Handler(new ActionChannelInitializer<ISocketChannel>(ch =>
-                    {
-                        var pipeline = ch.Pipeline;
-                        //pipeline.AddLast("split", new FrameSplitDecoder());
-                        //pipeline.AddLast("escape", new StdEscapeHandler());
-                        pipeline.AddLast("split", new StdFrameSplitHandler());
-                        pipeline.AddLast("unescape", new StdUnescapeHandler());
-                        if (HeartbeatSwitch)
-                        {
-                            var idleHandle = new IdleStateHandler(0, Interval, 0);
-                            pipeline.AddLast("idle", idleHandle);
-                        }
-                        pipeline.AddLast("device", Device);
-                    }));
+                    .Handler(Device.ChannelInitializer);
                 var addr = IPAddress.Parse(Host);
                 var endPoint = new IPEndPoint(addr, Port);
                 _channel = await bootstrap.ConnectAsync(endPoint);

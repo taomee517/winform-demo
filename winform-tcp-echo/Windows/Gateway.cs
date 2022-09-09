@@ -1,5 +1,9 @@
 ﻿using Beans;
 using Constant;
+using Device;
+using DotNetty.Buffers;
+using SDK.MEASURE.Constant;
+using SDK.MEASURE.Protocol;
 using SDK.STD;
 using SDK.STD.Beans;
 using SDK.STD.Constant;
@@ -18,13 +22,13 @@ namespace Windows
 {
     public partial class Gateway : Form
     {
-
+        private int SensorType = 27000;
         private static VirtualClient client;
 
         public delegate void ShowMsgLog(string role, string msg);
         public delegate void StatusChange(bool online);
         public delegate void PwdGetter(string pwd);
-        private delegate void AsyncCallBack();
+        public delegate void AsyncCallBack();
         
 
         private static StatusChange statusChange;
@@ -111,6 +115,11 @@ namespace Windows
             });
 
 
+            this.gatewayNoBox.Text = "4854000000000001";
+            this.portBox.Text = "21703";
+            this.MeasureMonitorDataSettingBox.Hide();
+            this.MeasureMonitorFuncsPanel.Hide();
+
             defaultSensorModel = new SensorModelInfo();
             defaultSensorModel.ModelName = "振弦默认传感器";
             defaultSensorModel.ParamSize = 2;
@@ -122,9 +131,9 @@ namespace Windows
         private async void connect_Click(object sender, EventArgs e)
         {
             var ip = this.ip.Text;
-            var port = Convert.ToInt32(this.port.Text);
-            var mac = gatewayNo.Text;
-            var device = new VirtualDevice(mac, showMsgLog, statusChange, pwdGetter);
+            var port = Convert.ToInt32(this.portBox.Text);
+            var mac = gatewayNoBox.Text;
+            var device = MockDeviceFactory.BuildMockDevice(this.SensorType, mac, showMsgLog, statusChange, pwdGetter);
             client = new VirtualClient(ip, port, false, 30, device);
             await client.Start();
         }
@@ -168,13 +177,9 @@ namespace Windows
         // 设备登录
         private void register_Click(object sender, EventArgs e)
         {
-            var gatewayNo = this.gatewayNo.Text;
-            if (gatewayNo == null || "".Equals(gatewayNo))
-            {
-                var errorMsg = "网关号为空！！！";
-                this.errorMessage.Text = errorMsg;
-                return;
-            }
+            var gatewayNo = this.gatewayNoBox.Text;
+            if (!gatewayNoValidate(gatewayNo)) return;
+
             byte[] bytes = MessageBuilder.BuildRegisterMessage(gatewayNo);
             this.messageBuffer.Text = bytesFormat(bytes); ;
 
@@ -191,13 +196,8 @@ namespace Windows
         // 设备登录
         private void login_Click(object sender, EventArgs e)
         {
-            var gatewayNo = this.gatewayNo.Text;
-            if (gatewayNo == null || "".Equals(gatewayNo))
-            {
-                var errorMsg = "网关号为空！！！";
-                this.errorMessage.Text = errorMsg;
-                return;
-            }
+            var gatewayNo = this.gatewayNoBox.Text;
+            if (!gatewayNoValidate(gatewayNo)) return;
 
             if (!DefaultValue.PWD_MAP.ContainsKey(gatewayNo))
             {
@@ -212,13 +212,9 @@ namespace Windows
         // 设备登出
         private void logout_Click(object sender, EventArgs e)
         {
-            var gatewayNo = this.gatewayNo.Text;
-            if (gatewayNo == null || "".Equals(gatewayNo))
-            {
-                var errorMsg = "网关号为空！！！";
-                this.errorMessage.Text = errorMsg;
-                return;
-            }
+            var gatewayNo = this.gatewayNoBox.Text;
+            if (!gatewayNoValidate(gatewayNo)) return;
+
             byte[] bytes = MessageBuilder.BuildLogoutMessage(gatewayNo);
             this.messageBuffer.Text = bytesFormat(bytes);
         }
@@ -226,13 +222,8 @@ namespace Windows
         // 拉取缓存指令
         private void cacheOrder_Click(object sender, EventArgs e)
         {
-            var gatewayNo = this.gatewayNo.Text;
-            if (gatewayNo == null || "".Equals(gatewayNo))
-            {
-                var errorMsg = "网关号为空！！！";
-                this.errorMessage.Text = errorMsg;
-                return;
-            }
+            var gatewayNo = this.gatewayNoBox.Text;
+            if (!gatewayNoValidate(gatewayNo)) return;
             byte[] bytes = MessageBuilder.BuildCacheOrderMessage(gatewayNo);
             this.messageBuffer.Text = bytesFormat(bytes);
         }
@@ -249,13 +240,8 @@ namespace Windows
 
         private void buildStatusMsg_Click(object sender, EventArgs e)
         {
-            var gatewayNo = this.gatewayNo.Text;
-            if (gatewayNo == null || "".Equals(gatewayNo))
-            {
-                var errorMsg = "网关号为空！！！";
-                this.errorMessage.Text = errorMsg;
-                return;
-            }
+            var gatewayNo = this.gatewayNoBox.Text;
+            if (!gatewayNoValidate(gatewayNo)) return;
 
             // 生成电池信息对象
             BatteryInfo batteryInfo = new BatteryInfo();
@@ -294,7 +280,7 @@ namespace Windows
 
 
             //生成信号信息对象
-           SignalInfo signalInfo = new SignalInfo();
+            SignalInfo signalInfo = new SignalInfo();
             signalInfo.SignalEnable = this.signalCheckBox.Checked;
 
             var signalVal = this.signalBox.Text;
@@ -411,30 +397,146 @@ namespace Windows
         }
 
 
-        //// 生成随机数据
-        //private List<SensorDataInfo> genDatas(int chSize, string baseFVal, string baseRVal, string swingFVal, string swingRVal)
-        //{
-        //    // 先清空历史数据
-        //    sensorDatas.Clear();
-        //    var baseF = Convert.ToDouble(baseFVal);
-        //    var baseR = Convert.ToDouble(baseRVal);
-        //    var swingF = Convert.ToDouble(swingFVal);
-        //    var swingR = Convert.ToDouble(swingRVal);
+        // 生成监控量测设备详情报文
+        private void measureDeviceInfoBtn_Click(object sender, EventArgs e)
+        {
+            var gatewayNo = this.gatewayNoBox.Text;
+            if (!gatewayNoValidate(gatewayNo)) return;
 
-        //    Random random = new Random();
-        //    for (int i = 0; i < chSize; i++)
-        //    {
-        //        var randomNF = Math.Round(baseF + random.NextDouble() * swingF, 2);
-        //        var randomNR = Math.Round(baseR + random.NextDouble() * swingR);
-        //        SensorDataInfo sensorData = new SensorDataInfo();
-        //        sensorData.ModelInfo = defaultSensorModel;
-        //        sensorData.CheckeState = this.selectChannelsBox.GetItemChecked(i);
-        //        sensorData.Params = new List<object>() { randomNF, randomNR };
-        //        sensorDatas.Add(sensorData);
-        //    }
-        //    return sensorDatas;
-        //}
+            // core 
+            byte[] gatewayBytes = System.Text.Encoding.UTF8.GetBytes(gatewayNo);
+            IByteBuffer buffer = Unpooled.Buffer();
+            buffer.WriteShort(0xD007);
+            buffer.WriteShort(gatewayBytes.Length + 1);
+            // option
+            byte option = 1 << 5;
+            buffer.WriteByte(option);
+            buffer.WriteBytes(gatewayBytes);
+            int readableBytes = buffer.ReadableBytes;
+            buffer.AdjustCapacity(readableBytes);
+            byte[] core = new byte[readableBytes];
+            buffer.ReadBytes(core);
 
+            // content
+            byte[] content = MeasureMessageBuilder.BuildContent(1,2,0xD00,core);
+
+            // message bytes
+            byte[] message = MeasureMessageBuilder.BuildMessage(SDK.MEASURE.Constant.HardwareType.GATEWAY, gatewayNo, content);
+            this.messageBuffer.Text = bytesFormat(message);
+        }
+
+
+        // 生成监控量测数据报文
+        private void measureDataBtn_Click(object sender, EventArgs e)
+        {
+            var gatewayNo = this.gatewayNoBox.Text;
+            if (!gatewayNoValidate(gatewayNo)) return;
+
+            var horizontalDistance = this.horizontalDistanceBox.Text;
+            var horizontalAngle = this.horizontalAngleBox.Text;
+            var virticalDistance = this.virticalDistanceBox.Text;
+            var virticalAngle = this.virticalAngleBox.Text;
+
+            var signal = this.signalBox.Text;
+
+            // 数据格式校验
+            if (
+                !valueTextValidate(horizontalDistance)  ||
+                !valueTextValidate(horizontalAngle)     ||
+                !valueTextValidate(virticalDistance)    ||
+                !valueTextValidate(virticalAngle)       ||
+                !valueTextValidate(signal)
+            ) return;
+
+            int errorCode = 0;
+            byte[] horizontalMsg = MeasureMessageBuilder.BuildDataMessage(gatewayNo,
+                Convert.ToInt32(LaserDirection.HORIZONTAL),
+                Convert.ToInt32(horizontalDistance),
+                Convert.ToInt32(horizontalAngle),
+                Convert.ToInt32(signal), errorCode);
+
+            byte[] virticalMsg = MeasureMessageBuilder.BuildDataMessage(gatewayNo,
+                Convert.ToInt32(LaserDirection.VIRTICAL),
+                Convert.ToInt32(virticalDistance),
+                Convert.ToInt32(virticalAngle),
+                Convert.ToInt32(signal), errorCode);
+            var msgBuf = bytesFormat(horizontalMsg) + " " + bytesFormat(virticalMsg);
+            this.messageBuffer.Text = msgBuf;
+        }
+
+
+        private void measureRandomDataBtn_Click(object sender, EventArgs e)
+        {
+            var horizontalDistance = this.horizontalDistanceBox.Text;
+            var horizontalAngle = this.horizontalAngleBox.Text;
+            var virticalDistance = this.virticalDistanceBox.Text;
+            var virticalAngle = this.virticalAngleBox.Text;
+
+
+            // 数据格式校验
+            if (
+                !valueTextValidate(horizontalDistance) ||
+                !valueTextValidate(horizontalAngle) ||
+                !valueTextValidate(virticalDistance) ||
+                !valueTextValidate(virticalAngle)
+            ) return;
+
+
+            // 随机范围
+            var horizontalRandomDistance = this.horizontalDistanceRandomBox.Text;
+            var horizontalRandomAngle = this.horizontalAngleRandomBox.Text;
+            var virticalRandomDistance = this.virticalDistanceRandomBox.Text;
+            var virticalRandomAngle = this.virticalAngleRandomBox.Text;
+
+
+            // 随机范围数据格式校验
+            if (
+                !valueTextValidate(horizontalRandomDistance) ||
+                !valueTextValidate(horizontalRandomAngle) ||
+                !valueTextValidate(virticalRandomDistance) ||
+                !valueTextValidate(virticalRandomAngle)
+            ) return;
+
+            Random random = new Random();
+            int multiply = random.Next() % 2 == 0?1:-1;
+            this.horizontalDistanceBox.Text = (Convert.ToInt32(horizontalDistance) + (int)(random.NextDouble() * Convert.ToInt32(horizontalRandomDistance)) * multiply).ToString();
+            this.horizontalAngleBox.Text = (Convert.ToInt32(horizontalAngle) + (int)(random.NextDouble() * Convert.ToInt32(horizontalRandomAngle)) * multiply).ToString();
+            this.virticalDistanceBox.Text = (Convert.ToInt32(virticalDistance) + (int)(random.NextDouble() * Convert.ToInt32(virticalRandomDistance)) * multiply).ToString();
+            this.virticalAngleBox.Text = (Convert.ToInt32(virticalAngle) + (int)(random.NextDouble() * Convert.ToInt32(virticalRandomAngle)) * multiply).ToString();
+        }
+
+
+        // 点击航天振弦
+        private void aeroVM_Click(object sender, EventArgs e)
+        {
+            this.SensorType = 27000;
+            this.gatewayNoBox.Text = "4854000000000001";
+            this.portBox.Text = "21703";
+            this.pwdLabel.Show();
+            this.pwdBox.Show();
+            this.AeroVMPanel.Show();
+            this.AeroVMDataSettingBox.Show();
+            this.AeroVMFuncsPanel.Show();
+            this.MeasureMonitorDataSettingBox.Hide();
+            this.MeasureMonitorFuncsPanel.Hide();
+
+        }
+
+
+        // 点击监控量测
+        private void measureMonitor_Click(object sender, EventArgs e)
+        {
+            this.SensorType = 7000;
+            this.portBox.Text = "19014";
+            this.gatewayNoBox.Text = "CL202200000001";
+            this.pwdLabel.Hide();
+            this.pwdBox.Hide();
+            this.AeroVMPanel.Hide();
+            this.AeroVMDataSettingBox.Hide();            
+            this.AeroVMFuncsPanel.Hide();
+            this.MeasureMonitorDataSettingBox.Show();
+            this.MeasureMonitorFuncsPanel.Show();
+        }
 
 
         // 生成随机数据
@@ -495,13 +597,8 @@ namespace Windows
         // 生成数据报文，填充待发送框
         private void fulfillSendBox()
         {
-            var gatewayNo = this.gatewayNo.Text;
-            if (gatewayNo == null || "".Equals(gatewayNo))
-            {
-                var errorMsg = "网关号为空！！！";
-                this.errorMessage.Text = errorMsg;
-                return;
-            }
+            var gatewayNo = this.gatewayNoBox.Text;
+            if (!gatewayNoValidate(gatewayNo)) return;
 
             if (this.selectChannelsBox.CheckedItems.Count == 0)
             {
@@ -522,8 +619,57 @@ namespace Windows
             this.selectChannelsBox.BackColor = Color.White;
         }
 
+        private bool gatewayNoValidate(string gatewayNo)
+        {
+            if (gatewayNo == null || "".Equals(gatewayNo))
+            {
+                var errorMsg = "网关号为空！！！";
+                this.errorMessage.Text = errorMsg;
+                return false;
+            }
 
-        
+            if (this.SensorType == 27000)
+            {
+                if (gatewayNo.Length != 16 || !gatewayNo.StartsWith("4854"))
+                {
+                    var errorMsg = "网关号格式不符！！！";
+                    this.errorMessage.Text = errorMsg;
+                    return false;
+                }
+            }
+            else if(this.SensorType == 7000)
+            {
+                if (gatewayNo.Length != 14 || !gatewayNo.StartsWith("CL"))
+                {
+                    var errorMsg = "网关号格式不符！！！";
+                    this.errorMessage.Text = errorMsg;
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool valueTextValidate(string text)
+        {
+            if (text == null || "".Equals(text))
+            {
+                var errorMsg = "数据为空！！！";
+                this.errorMessage.Text = errorMsg;
+                return false;
+            }
+            try
+            {
+                var value = Convert.ToDecimal(text);
+            }
+            catch(Exception e)
+            {
+                var errorMsg = "数据格式异常！！！";
+                this.errorMessage.Text = errorMsg;
+                return false;
+            }
+            return true;
+        }
 
 
         private void recycleGenDataAndSend()
